@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RentFlow — ভাড়া ম্যানেজমেন্ট সিস্টেম</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & ROOT ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:       #0a0b0f;
+  --bg2:      #0f1117;
+  --surface:  #13151d;
+  --surface2: #1a1d28;
+  --surface3: #20243380;
+  --border:   #252836;
+  --border2:  #2e3245;
+
+  --accent:   #7c6ff7;
+  --accent-g: linear-gradient(135deg,#7c6ff7,#a78bfa);
+  --red:      #f87171;
+  --red-bg:   rgba(248,113,113,0.1);
+  --red-brd:  rgba(248,113,113,0.25);
+  --green:    #34d399;
+  --green-bg: rgba(52,211,153,0.08);
+  --green-brd:rgba(52,211,153,0.2);
+  --amber:    #fbbf24;
+  --amber-bg: rgba(251,191,36,0.08);
+  --amber-brd:rgba(251,191,36,0.2);
+  --blue:     #60a5fa;
+  --blue-bg:  rgba(96,165,250,0.08);
+  --blue-brd: rgba(96,165,250,0.2);
+
+  --text:     #eef0f8;
+  --text2:    #8b91b4;
+  --text3:    #4d5270;
+
+  --radius:   14px;
+  --radius-sm:9px;
+  --shadow:   0 4px 24px rgba(0,0,0,0.5);
+  --shadow-lg:0 16px 48px rgba(0,0,0,0.6);
+
+  --font: 'Syne','Noto Sans Bengali',sans-serif;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+/* ===== LAYOUT ===== */
+.app {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 20;
+  transition: transform 0.25s cubic-bezier(.4,0,.2,1);
+}
+
+.sidebar-top {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 0;
+}
+
+.logo-mark {
+  width: 40px; height: 40px;
+  background: var(--accent-g);
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 4px 16px rgba(124,111,247,0.4);
+  flex-shrink: 0;
+}
+
+.logo-name {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text);
+}
+
+.logo-name em {
+  font-style: normal;
+  background: var(--accent-g);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo-badge {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+nav {
+  padding: 16px 12px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.nav-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 0 10px;
+  margin: 12px 0 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-family: var(--font);
+  transition: all 0.15s ease;
+  margin-bottom: 2px;
+  position: relative;
+}
+
+.nav-item svg { width: 17px; height: 17px; flex-shrink: 0; stroke-width: 2; }
+
+.nav-item:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.nav-item.active {
+  background: rgba(124,111,247,0.12);
+  color: var(--accent);
+  border: 1px solid rgba(124,111,247,0.2);
+}
+
+.nav-item .nav-count {
+  margin-left: auto;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 20px;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+}
+
+.nav-item.active .nav-count {
+  background: rgba(124,111,247,0.15);
+  color: var(--accent);
+  border-color: rgba(124,111,247,0.25);
+}
+
+/* Sidebar bottom stats */
+.sidebar-stats {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.sstat {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  transition: border-color 0.15s;
+}
+
+.sstat:hover { border-color: var(--border2); }
+
+.sstat-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 5px;
+}
+
+.sstat-value {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.sstat-value.green { color: var(--green); }
+.sstat-value.red   { color: var(--red); }
+.sstat-value.def   { color: var(--text); }
+
+/* ===== MAIN ===== */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* Topbar */
+.topbar {
+  padding: 18px 28px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hamburger {
+  display: none;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 36px; height: 36px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  color: var(--text2);
+  transition: all 0.15s;
+}
+.hamburger:hover { color: var(--text); border-color: var(--border2); }
+.hamburger svg { width: 18px; height: 18px; }
+
+.page-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text);
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  font-family: var(--font);
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn svg { width: 15px; height: 15px; stroke-width: 2.2; flex-shrink: 0; }
+
+.btn-ghost {
+  background: var(--surface2);
+  color: var(--text2);
+  border: 1px solid var(--border2);
+}
+.btn-ghost:hover { color: var(--text); border-color: var(--accent); background: rgba(124,111,247,0.06); }
+
+.btn-primary {
+  background: var(--accent-g);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(124,111,247,0.35);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(124,111,247,0.5); }
+.btn-primary:active { transform: translateY(0); }
+
+.btn-danger {
+  background: var(--red-bg);
+  color: var(--red);
+  border: 1px solid var(--red-brd);
+}
+.btn-danger:hover { background: rgba(248,113,113,0.18); }
+
+.btn-success {
+  background: var(--green-bg);
+  color: var(--green);
+  border: 1px solid var(--green-brd);
+}
+
+.btn-sm { padding: 6px 11px; font-size: 12px; }
+.btn-icon { padding: 7px; }
+
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+/* ===== CONTENT ===== */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+.content::-webkit-scrollbar { width: 5px; }
+.content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+
+/* ===== STAT CARDS ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  cursor: default;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent-g);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--border2); }
+
+.stat-card-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 14px 14px 0 0;
+}
+
+.sc-purple .stat-card-bar { background: linear-gradient(90deg,#7c6ff7,#a78bfa); }
+.sc-red    .stat-card-bar { background: linear-gradient(90deg,#f87171,#fca5a5); }
+.sc-green  .stat-card-bar { background: linear-gradient(90deg,#34d399,#6ee7b7); }
+.sc-amber  .stat-card-bar { background: linear-gradient(90deg,#fbbf24,#fde68a); }
+
+.stat-icon-bg {
+  position: absolute;
+  right: 18px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 42px;
+  opacity: 0.08;
+  pointer-events: none;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 10px;
+}
+
+.stat-value {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.stat-sub {
+  font-size: 12px;
+  color: var(--text3);
+}
+
+/* ===== CARD ===== */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-title svg { width: 16px; height: 16px; color: var(--accent); }
+
+/* ===== BADGES ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badge-red    { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-brd); }
+.badge-green  { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-brd); }
+.badge-amber  { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-brd); }
+.badge-blue   { background: var(--blue-bg);  color: var(--blue);  border: 1px solid var(--blue-brd); }
+.badge-purple { background: rgba(124,111,247,0.1); color: var(--accent); border: 1px solid rgba(124,111,247,0.2); }
+
+/* ===== TABLE ===== */
+.table-wrap { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 11px 16px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  text-align: left;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+td {
+  padding: 13px 16px;
+  font-size: 13.5px;
+  border-bottom: 1px solid rgba(255,255,255,0.035);
+  vertical-align: middle;
+}
+
+tr:last-child td { border-bottom: none; }
+
+tbody tr { transition: background 0.1s; }
+tbody tr:hover td { background: rgba(255,255,255,0.015); }
+
+tfoot td {
+  padding: 13px 16px;
+  background: var(--surface2);
+  font-weight: 700;
+  font-size: 13px;
+  border-top: 2px solid var(--border2);
+}
+
+.td-primary { font-weight: 700; color: var(--text); }
+.td-secondary { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+/* ===== EMPTY STATE ===== */
+.empty {
+  padding: 52px 20px;
+  text-align: center;
+  color: var(--text3);
+}
+.empty-icon { font-size: 44px; margin-bottom: 12px; line-height: 1; }
+.empty-title { font-size: 15px; font-weight: 700; color: var(--text2); margin-bottom: 6px; }
+.empty-sub { font-size: 13px; }
+
+/* ===== TWO-COL GRID ===== */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* ===== MINI LIST (dashboard recent) ===== */
+.mini-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.035);
+  transition: background 0.1s;
+}
+.mini-row:last-child { border-bottom: none; }
+.mini-row:hover { background: rgba(255,255,255,0.015); }
+
+/* ===== MODAL ===== */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(6px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 18px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: modalPop 0.2s cubic-bezier(.34,1.56,.64,1);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+.modal::-webkit-scrollbar { width: 4px; }
+.modal::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+
+@keyframes modalPop {
+  from { opacity:0; transform:scale(0.92) translateY(12px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+
+.modal-header {
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
+}
+
+.modal-title { font-size: 17px; font-weight: 800; letter-spacing: -0.3px; }
+
+.modal-close {
+  width: 32px; height: 32px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text2);
+  transition: all 0.15s;
+  font-size: 16px;
+  font-family: var(--font);
+}
+.modal-close:hover { background: var(--border); color: var(--text); }
+
+.modal-body { padding: 22px 24px; }
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  position: sticky;
+  bottom: 0;
+  background: var(--surface);
+}
+
+/* ===== FORM ===== */
+.form-group { margin-bottom: 16px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 7px;
+}
+.form-label .opt { color: var(--text3); font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+input[type=text],
+input[type=number],
+input[type=date],
+input[type=tel],
+select, textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border2);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(124,111,247,0.12);
+}
+
+input::placeholder, textarea::placeholder { color: var(--text3); }
+select option { background: #1a1d28; color: var(--text); }
+input[type=date]::-webkit-calendar-picker-indicator { filter: invert(0.55) brightness(1.5); cursor: pointer; }
+
+.input-prefix {
+  position: relative;
+}
+.input-prefix span {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3);
+  font-size: 14px;
+  font-weight: 700;
+  pointer-events: none;
+}
+.input-prefix input { padding-left: 28px; }
+
+/* Utility checkboxes */
+.util-list { display: flex; flex-direction: column; gap: 8px; max-height: 230px; overflow-y: auto; padding-right: 4px; }
+.util-list::-webkit-scrollbar { width: 4px; }
+.util-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+
+.util-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 13px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.util-item.on { border-color: var(--accent); background: rgba(124,111,247,0.07); }
+
+.util-item input[type=checkbox] {
+  width: 16px; height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+.util-item label {
+  flex: 1;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.util-item.on label { color: var(--text); }
+
+.util-amount {
+  width: 110px;
+  min-width: 110px;
+  padding: 7px 10px;
+  font-size: 13px;
+}
+
+/* ===== CONFIRM MODAL ===== */
+.confirm-body { padding: 32px 24px 24px; text-align: center; }
+.confirm-ring {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: var(--red-bg);
+  border: 2px solid var(--red-brd);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  margin: 0 auto 18px;
+}
+.confirm-title { font-size: 18px; font-weight: 800; margin-bottom: 10px; }
+.confirm-msg { font-size: 13px; color: var(--text2); line-height: 1.65; }
+
+/* ===== TOAST ===== */
+#toast-root {
+  position: fixed;
+  top: 20px; right: 20px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 11px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  animation: toastIn 0.25s ease;
+  min-width: 220px;
+  max-width: 320px;
+}
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error   { border-left: 3px solid var(--red); }
+.toast.info    { border-left: 3px solid var(--accent); }
+
+@keyframes toastIn {
+  from { opacity:0; transform: translateX(24px) scale(0.96); }
+  to   { opacity:1; transform: translateX(0) scale(1); }
+}
+
+/* ===== SECTION HEADER ===== */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 26px 0 14px;
+}
+.section-header h2 { font-size: 16px; font-weight: 800; white-space: nowrap; }
+.section-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ===== SEARCH BAR ===== */
+.search-wrap { position: relative; }
+.search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--text3); pointer-events: none; }
+.search-wrap input { padding-left: 36px; }
+
+/* ===== MOBILE OVERLAY BACKDROP ===== */
+#sb-backdrop {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 15;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1000px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .two-col { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 700px) {
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    transform: translateX(-100%);
+  }
+  .sidebar.open { transform: translateX(0); }
+  #sb-backdrop.open { display: block; }
+  .hamburger { display: flex; }
+  .content { padding: 16px; }
+  .topbar { padding: 14px 16px; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .topbar-actions .btn span { display: none; }
+}
+
+/* ===== ANIMATIONS ===== */
+.fade-in { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* ===== PROGRESS BAR (month progress) ===== */
+.progress-bar {
+  height: 4px;
+  background: var(--border2);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  background: var(--accent-g);
+  transition: width 0.6s cubic-bezier(.4,0,.2,1);
+}
+
+/* ===== TENANT DETAIL CARD ===== */
+.tenant-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-bottom: 20px; }
+
+.tenant-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.tenant-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: var(--shadow); }
+.tenant-card.has-due { border-left: 3px solid var(--red); }
+.tenant-card.cleared { border-left: 3px solid var(--green); }
+.tenant-card.overpaid { border-left: 3px solid var(--blue); }
+
+.tc-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+.tc-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--accent-g);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+.tc-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.tc-unit { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.tc-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.tc-meta-item { font-size: 12px; color: var(--text3); display: flex; align-items: center; gap: 4px; }
+.tc-actions { display: flex; gap: 8px; margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="logo">
+        <div class="logo-mark">🏠</div>
+        <div>
+          <div class="logo-name">Rent<em>Flow</em></div>
+          <span class="logo-badge">ভাড়া ম্যানেজমেন্ট</span>
+        </div>
+      </div>
+    </div>
+
+    <nav>
+      <div class="nav-section-label">মূল মেনু</div>
+
+      <button class="nav-item active" id="nav-dashboard" onclick="navigate('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        ড্যাশবোর্ড
+      </button>
+
+      <button class="nav-item" id="nav-tenants" onclick="navigate('tenants')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        ভাড়াটিয়া
+        <span class="nav-count" id="nc-tenants">0</span>
+      </button>
+
+      <button class="nav-item" id="nav-payments" onclick="navigate('payments')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        পেমেন্ট হিস্ট্রি
+        <span class="nav-count" id="nc-payments">0</span>
+      </button>
+
+      <button class="nav-item" id="nav-utilities" onclick="navigate('utilities')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        ইউটিলিটি বিল
+        <span class="nav-count" id="nc-utilities">0</span>
+      </button>
+
+      <div class="nav-section-label" style="margin-top:20px">রিপোর্ট</div>
+
+      <button class="nav-item" id="nav-report" onclick="navigate('report')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        সারসংক্ষেপ রিপোর্ট
+      </button>
+    </nav>
+
+    <div class="sidebar-stats">
+      <div class="sstat">
+        <div class="sstat-label">মাসিক ভাড়া রোল</div>
+        <div class="sstat-value def" id="ss-monthly">৳০</div>
+      </div>
+      <div class="sstat">
+        <div class="sstat-label">মোট বকেয়া</div>
+        <div class="sstat-value red" id="ss-dues">৳০</div>
+      </div>
+      <div class="sstat">
+        <div class="sstat-label">মোট আদায়</div>
+        <div class="sstat-value green" id="ss-collected">৳০</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mobile backdrop -->
+  <div id="sb-backdrop" onclick="closeSidebar()"></div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" onclick="openSidebar()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="page-title" id="page-title">ড্যাশবোর্ড</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="openUtilityModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span>ইউটিলিটি</span>
+        </button>
+        <button class="btn btn-ghost" onclick="openPaymentModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span>পেমেন্ট</span>
+        </button>
+        <button class="btn btn-primary" onclick="openTenantModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          <span>ভাড়াটিয়া যোগ</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-root"></div>
+
+<!-- ======= MODALS ======= -->
+
+<!-- Add Tenant -->
+<div class="overlay" id="modal-tenant" onclick="overlayClose(event,'modal-tenant')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">নতুন ভাড়াটিয়া যোগ করুন</div>
+      <button class="modal-close" onclick="closeModal('modal-tenant')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">পুরো নাম <span style="color:var(--red)">*</span></label>
+        <input type="text" id="f-name" placeholder="যেমন: মোহাম্মদ রহিম">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">ইউনিট / ফ্ল্যাট <span style="color:var(--red)">*</span></label>
+          <input type="text" id="f-unit" placeholder="যেমন: ৪বি">
+        </div>
+        <div class="form-group">
+          <label class="form-label">ফোন নম্বর <span class="opt">(ঐচ্ছিক)</span></label>
+          <input type="tel" id="f-phone" placeholder="০১XXXXXXXXX">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">মাসিক ভাড়া (৳) <span style="color:var(--red)">*</span></label>
+          <div class="input-prefix"><span>৳</span><input type="number" id="f-rent" placeholder="১০০০০" min="0"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">ভাড়া শুরুর তারিখ <span style="color:var(--red)">*</span></label>
+          <input type="date" id="f-moveIn">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">পূর্বের বকেয়া (৳) <span class="opt">(ঐচ্ছিক)</span></label>
+        <div class="input-prefix"><span>৳</span><input type="number" id="f-prev" placeholder="০" min="0" value="0"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ঠিকানা / নোট <span class="opt">(ঐচ্ছিক)</span></label>
+        <input type="text" id="f-note" placeholder="যেমন: ৩য় তলা, সিঁড়ির পাশে">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-tenant')">বাতিল</button>
+      <button class="btn btn-primary" onclick="saveTenant()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        সেভ করুন
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Record Payment -->
+<div class="overlay" id="modal-payment" onclick="overlayClose(event,'modal-payment')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">পেমেন্ট রেকর্ড করুন</div>
+      <button class="modal-close" onclick="closeModal('modal-payment')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">ভাড়াটিয়া নির্বাচন করুন <span style="color:var(--red)">*</span></label>
+        <select id="p-tenant"></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">প্রাপ্ত পরিমাণ (৳) <span style="color:var(--red)">*</span></label>
+          <div class="input-prefix"><span>৳</span><input type="number" id="p-amount" placeholder="১২০০০" min="1" step="0.01"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">পেমেন্টের তারিখ <span style="color:var(--red)">*</span></label>
+          <input type="date" id="p-date">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">পেমেন্ট পদ্ধতি</label>
+        <select id="p-method">
+          <option value="">নির্বাচন করুন</option>
+          <option>নগদ</option>
+          <option>বিকাশ</option>
+          <option>নগদ (মোবাইল)</option>
+          <option>ব্যাংক ট্রান্সফার</option>
+          <option>রকেট</option>
+          <option>অন্যান্য</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">নোট <span class="opt">(ঐচ্ছিক)</span></label>
+        <input type="text" id="p-note" placeholder="যেমন: জুলাই মাসের ভাড়া">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-payment')">বাতিল</button>
+      <button class="btn btn-primary" onclick="savePayment()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+        রেকর্ড করুন
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Utility Bill -->
+<div class="overlay" id="modal-utility" onclick="overlayClose(event,'modal-utility')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">ইউটিলিটি বিল যোগ করুন</div>
+      <button class="modal-close" onclick="closeModal('modal-utility')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">ভাড়াটিয়া নির্বাচন করুন <span style="color:var(--red)">*</span></label>
+        <select id="u-tenant"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">বিলের তারিখ <span style="color:var(--red)">*</span></label>
+        <input type="date" id="u-date">
+      </div>
+      <div class="form-group">
+        <label class="form-label" style="margin-bottom:10px">ইউটিলিটি সমূহ <span class="opt">(একাধিক নির্বাচন করুন)</span></label>
+        <div class="util-list" id="util-list"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-utility')">বাতিল</button>
+      <button class="btn btn-primary" onclick="saveUtility()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+        সেভ করুন
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm -->
+<div class="overlay" id="modal-delete" onclick="overlayClose(event,'modal-delete')">
+  <div class="modal" style="max-width:400px">
+    <div class="confirm-body">
+      <div class="confirm-ring">🗑️</div>
+      <div class="confirm-title">ভাড়াটিয়া মুছবেন?</div>
+      <div class="confirm-msg" id="del-msg"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-delete')">বাতিল</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        মুছে ফেলুন
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ======= JAVASCRIPT ======= -->
+<script>
+'use strict';
+
+// ===================== CONFIG =====================
+const UTIL_TYPES = [
+  { label:'বিদ্যুৎ বিল', icon:'💡' },
+  { label:'গ্যাস বিল',   icon:'🔥' },
+  { label:'পানির বিল',   icon:'💧' },
+  { label:'ইন্টারনেট বিল', icon:'🌐' },
+  { label:'ময়লা/সার্ভিস চার্জ', icon:'🧹' },
+  { label:'লিফট চার্জ',  icon:'🛗' },
+  { label:'নিরাপত্তা চার্জ', icon:'🔒' },
+  { label:'অন্যান্য',   icon:'📋' },
+];
+
+// ===================== STATE =====================
+let DB = { tenants:[], payments:[], utilities:[] };
+let pendingDeleteId = null;
+let currentView = 'dashboard';
+
+// ===================== PERSISTENCE =====================
+const STORE_KEY = 'rentflow-v2';
+
+async function loadDB() {
+  try {
+    const r = await window.storage.get(STORE_KEY);
+    if (r && r.value) {
+      const d = JSON.parse(r.value);
+      DB.tenants   = d.tenants   || [];
+      DB.payments  = d.payments  || [];
+      DB.utilities = d.utilities || [];
+    }
+  } catch(e) { /* fresh start */ }
+  refreshAll();
+}
+
+async function saveDB() {
+  try {
+    await window.storage.set(STORE_KEY, JSON.stringify(DB));
+  } catch(e) {
+    toast('ডেটা সেভ করতে সমস্যা হয়েছে!', 'error');
+  }
+}
+
+// ===================== CALCULATIONS =====================
+function monthsPassed(moveInDate) {
+  const d = new Date(moveInDate + 'T00:00:00');
+  const now = new Date();
+  if (d > now) return 0;
+  const diff = (now.getFullYear() - d.getFullYear()) * 12 + (now.getMonth() - d.getMonth()) + 1;
+  return Math.max(1, diff);
+}
+
+function calcTenant(t) {
+  const months   = monthsPassed(t.moveInDate);
+  const expected = months * t.rent;
+  const paid     = DB.payments .filter(p => p.tenantId === t.id).reduce((s,p) => s + p.amount, 0);
+  const utils    = DB.utilities.filter(u => u.tenantId === t.id).reduce((s,u) => s + u.amount, 0);
+  const prev     = t.previousBalance || 0;
+  const due      = expected + utils + prev - paid;
+  return { ...t, months, expected, paid, utils, prev, due };
+}
+
+function globalStats() {
+  const twb = DB.tenants.map(calcTenant);
+  const monthly   = DB.tenants.reduce((s,t) => s + t.rent, 0);
+  const dues      = twb.filter(t => t.due > 0).reduce((s,t) => s + t.due, 0);
+  const collected = DB.payments.reduce((s,p) => s + p.amount, 0);
+  const utilTotal = DB.utilities.reduce((s,u) => s + u.amount, 0);
+  return { twb, monthly, dues, collected, utilTotal };
+}
+
+// ===================== NAVIGATION =====================
+const PAGE_TITLES = {
+  dashboard: 'ড্যাশবোর্ড',
+  tenants:   'ভাড়াটিয়া',
+  payments:  'পেমেন্ট হিস্ট্রি',
+  utilities: 'ইউটিলিটি বিল',
+  report:    'সারসংক্ষেপ রিপোর্ট',
+};
+
+function navigate(view) {
+  currentView = view;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const nav = document.getElementById('nav-' + view);
+  if (nav) nav.classList.add('active');
+  document.getElementById('page-title').textContent = PAGE_TITLES[view] || view;
+  render();
+  closeSidebar();
+}
+
+// ===================== SIDEBAR =====================
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sb-backdrop').classList.add('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sb-backdrop').classList.remove('open');
+}
+
+// ===================== RENDER =====================
+function refreshAll() {
+  updateSidebarStats();
+  updateNavCounts();
+  render();
+}
+
+function render() {
+  const el = document.getElementById('content');
+  el.className = 'content fade-in';
+  const renderers = { dashboard, tenants, payments, utilities, report };
+  el.innerHTML = (renderers[currentView] || (() => ''))();
+}
+
+function updateSidebarStats() {
+  const { monthly, dues, collected } = globalStats();
+  document.getElementById('ss-monthly').textContent   = '৳' + fmt(monthly);
+  document.getElementById('ss-dues').textContent      = '৳' + fmt(dues);
+  document.getElementById('ss-collected').textContent = '৳' + fmt(collected);
+}
+
+function updateNavCounts() {
+  document.getElementById('nc-tenants').textContent   = DB.tenants.length;
+  document.getElementById('nc-payments').textContent  = DB.payments.length;
+  document.getElementById('nc-utilities').textContent = DB.utilities.length;
+}
+
+// ===================== VIEWS =====================
+
+function dashboard() {
+  const { twb, monthly, dues, collected, utilTotal } = globalStats();
+  const owing   = twb.filter(t => t.due > 0);
+  const cleared = twb.filter(t => t.due <= 0);
+  const recPay  = [...DB.payments ].sort((a,b) => new Date(b.createdAt)-new Date(a.createdAt)).slice(0,6);
+  const recUtil = [...DB.utilities].sort((a,b) => new Date(b.createdAt)-new Date(a.createdAt)).slice(0,6);
+
+  return `
+  <div class="stats-grid">
+    <div class="stat-card sc-purple">
+      <div class="stat-card-bar"></div>
+      <div class="stat-icon-bg">💰</div>
+      <div class="stat-label">মাসিক ভাড়া রোল</div>
+      <div class="stat-value">৳${fmt(monthly)}</div>
+      <div class="stat-sub">${DB.tenants.length} জন ভাড়াটিয়া • প্রতি মাসে প্রত্যাশিত</div>
+    </div>
+    <div class="stat-card sc-red">
+      <div class="stat-card-bar"></div>
+      <div class="stat-icon-bg">⚠️</div>
+      <div class="stat-label">মোট বকেয়া পাওনা</div>
+      <div class="stat-value" style="color:${dues>0?'var(--red)':'var(--green)'}">৳${fmt(dues)}</div>
+      <div class="stat-sub">${owing.length} জনের কাছে বকেয়া রয়েছে</div>
+    </div>
+    <div class="stat-card sc-green">
+      <div class="stat-card-bar"></div>
+      <div class="stat-icon-bg">✅</div>
+      <div class="stat-label">মোট আদায় (সর্বমোট)</div>
+      <div class="stat-value" style="color:var(--green)">৳${fmt(collected)}</div>
+      <div class="stat-sub">${DB.payments.length}টি পেমেন্ট রেকর্ড</div>
+    </div>
+    <div class="stat-card sc-amber" style="display:${DB.tenants.length?'block':'none'}">
+      <div class="stat-card-bar"></div>
+      <div class="stat-icon-bg">⚡</div>
+      <div class="stat-label">মোট ইউটিলিটি বিল</div>
+      <div class="stat-value" style="color:var(--amber)">৳${fmt(utilTotal)}</div>
+      <div class="stat-sub">${DB.utilities.length}টি বিল এন্ট্রি</div>
+    </div>
+    <div class="stat-card sc-purple" style="display:${DB.tenants.length?'block':'none'}">
+      <div class="stat-card-bar"></div>
+      <div class="stat-icon-bg">🏠</div>
+      <div class="stat-label">পরিশোধিত ভাড়াটিয়া</div>
+      <div class="stat-value" style="color:var(--green)">${cleared.length}<span style="font-size:16px;color:var(--text3)"> / ${DB.tenants.length}</span></div>
+      <div class="stat-sub">${owing.length > 0 ? owing.length + ' জনের বকেয়া বাকি' : 'সবাই পরিশোধিত 🎉'}</div>
+    </div>
+    <div class="stat-card sc-green" style="display:${DB.tenants.length?'block':'none'}">
+      <div class="stat-card-bar"></div>
+      <div class="stat-icon-bg">📊</div>
+      <div class="stat-label">গড় মাসিক ভাড়া</div>
+      <div class="stat-value">৳${fmt(DB.tenants.length ? Math.round(monthly/DB.tenants.length) : 0)}</div>
+      <div class="stat-sub">প্রতি ভাড়াটিয়া প্রতি মাসে</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        বকেয়া ভাড়াটিয়া
+      </div>
+      ${owing.length > 0 ? `<span class="badge badge-red">${owing.length} জন বকেয়া</span>` : '<span class="badge badge-green">সব পরিশোধিত ✓</span>'}
+    </div>
+    ${owing.length === 0
+      ? `<div class="empty"><div class="empty-icon">🎉</div><div class="empty-title">দারুণ!</div><div class="empty-sub">সব ভাড়াটিয়ার ভাড়া পরিশোধিত।</div></div>`
+      : `<div class="table-wrap"><table>
+          <thead><tr>
+            <th>নাম / ইউনিট</th>
+            <th>মাসিক ভাড়া</th>
+            <th>মোট মাস</th>
+            <th>মোট প্রত্যাশিত</th>
+            <th>মোট পরিশোধ</th>
+            <th>বকেয়া</th>
+            <th>ফোন</th>
+          </tr></thead>
+          <tbody>
+            ${owing.map(t => `<tr>
+              <td>
+                <div class="td-primary">${t.name}</div>
+                <div class="td-secondary">${t.unit}</div>
+              </td>
+              <td style="color:var(--text2)">৳${fmt(t.rent)}</td>
+              <td><span class="badge badge-purple">${t.months} মাস</span></td>
+              <td style="color:var(--text2)">৳${fmt(t.expected)}</td>
+              <td style="color:var(--green)">৳${fmt(t.paid)}</td>
+              <td><span class="badge badge-red">৳${fmt(t.due)}</span></td>
+              <td style="color:var(--text3)">${t.phone || '—'}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table></div>`
+    }
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          সাম্প্রতিক পেমেন্ট
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="navigate('payments')">সব দেখুন →</button>
+      </div>
+      ${recPay.length === 0
+        ? `<div class="empty" style="padding:28px"><div class="empty-icon">💳</div><div class="empty-sub">কোনো পেমেন্ট নেই</div></div>`
+        : recPay.map(p => {
+            const t = DB.tenants.find(x => x.id === p.tenantId);
+            return `<div class="mini-row">
+              <div>
+                <div style="font-weight:700;font-size:13.5px">${t?.name||'অজ্ঞাত'}</div>
+                <div style="font-size:12px;color:var(--text3)">${t?.unit||''} • ${fmtDate(p.date)}${p.method?' • '+p.method:''}</div>
+              </div>
+              <span class="badge badge-green">+৳${fmt(p.amount)}</span>
+            </div>`;
+          }).join('')
+      }
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          সাম্প্রতিক ইউটিলিটি
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="navigate('utilities')">সব দেখুন →</button>
+      </div>
+      ${recUtil.length === 0
+        ? `<div class="empty" style="padding:28px"><div class="empty-icon">⚡</div><div class="empty-sub">কোনো ইউটিলিটি নেই</div></div>`
+        : recUtil.map(u => {
+            const t = DB.tenants.find(x => x.id === u.tenantId);
+            return `<div class="mini-row">
+              <div>
+                <div style="font-weight:700;font-size:13.5px">${t?.name||'অজ্ঞাত'}</div>
+                <div style="font-size:12px;color:var(--text3)">${u.description} • ${fmtDate(u.date)}</div>
+              </div>
+              <span class="badge badge-amber">৳${fmt(u.amount)}</span>
+            </div>`;
+          }).join('')
+      }
+    </div>
+  </div>`;
+}
+
+function tenants() {
+  const twb = DB.tenants.map(calcTenant);
+  return `
+  <div class="tenant-cards">
+    ${twb.length === 0
+      ? `<div class="empty" style="grid-column:1/-1;padding:60px">
+          <div class="empty-icon">🏠</div>
+          <div class="empty-title">কোনো ভাড়াটিয়া নেই</div>
+          <div class="empty-sub">উপরে "ভাড়াটিয়া যোগ" বাটনে ক্লিক করে শুরু করুন।</div>
+        </div>`
+      : twb.map(t => {
+          const cls = t.due > 0 ? 'has-due' : t.due < 0 ? 'overpaid' : 'cleared';
+          const initials = t.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+          return `<div class="tenant-card ${cls}">
+            <div class="tc-top">
+              <div style="display:flex;align-items:center;gap:11px;flex:1">
+                <div class="tc-avatar">${initials}</div>
+                <div>
+                  <div class="tc-name">${t.name}</div>
+                  <div class="tc-unit">${t.unit}</div>
+                </div>
+              </div>
+              ${t.due > 0
+                ? `<span class="badge badge-red">৳${fmt(t.due)} বকেয়া</span>`
+                : t.due < 0
+                ? `<span class="badge badge-blue">৳${fmt(Math.abs(t.due))} অতিরিক্ত</span>`
+                : `<span class="badge badge-green">পরিশোধিত ✓</span>`}
+            </div>
+
+            <div style="background:var(--surface2);border-radius:9px;padding:12px;margin-bottom:12px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">
+                <div><div style="color:var(--text3);margin-bottom:3px">মাসিক ভাড়া</div><div style="font-weight:700;color:var(--text)">৳${fmt(t.rent)}</div></div>
+                <div><div style="color:var(--text3);margin-bottom:3px">অতিবাহিত মাস</div><div style="font-weight:700;color:var(--accent)">${t.months} মাস</div></div>
+                <div><div style="color:var(--text3);margin-bottom:3px">মোট পরিশোধ</div><div style="font-weight:700;color:var(--green)">৳${fmt(t.paid)}</div></div>
+                <div><div style="color:var(--text3);margin-bottom:3px">ইউটিলিটি</div><div style="font-weight:700;color:var(--amber)">৳${fmt(t.utils)}</div></div>
+              </div>
+            </div>
+
+            <div class="tc-meta">
+              <span class="tc-meta-item">📅 ${fmtDate(t.moveInDate)}</span>
+              ${t.phone ? `<span class="tc-meta-item">📞 ${t.phone}</span>` : ''}
+              ${t.prev > 0 ? `<span class="tc-meta-item">⚠️ পূর্বের বকেয়া: ৳${fmt(t.prev)}</span>` : ''}
+              ${t.noteText ? `<span class="tc-meta-item">📍 ${t.noteText}</span>` : ''}
+            </div>
+
+            <div class="tc-actions">
+              <button class="btn btn-ghost btn-sm" style="flex:1" onclick="quickPayment('${t.id}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                পেমেন্ট
+              </button>
+              <button class="btn btn-ghost btn-sm" style="flex:1" onclick="quickUtility('${t.id}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                ইউটিলিটি
+              </button>
+              <button class="btn btn-danger btn-sm btn-icon" onclick="promptDelete('${t.id}','${esc(t.name)}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+          </div>`;
+        }).join('')
+    }
+  </div>
+
+  <div class="section-header"><h2>📋 ভাড়াটিয়া তালিকা (বিস্তারিত)</h2><div class="section-line"></div></div>
+  <div class="card">
+    <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>নাম / ইউনিট</th>
+        <th>মাসিক ভাড়া</th>
+        <th>শুরুর তারিখ</th>
+        <th>মাস</th>
+        <th>প্রত্যাশিত</th>
+        <th>পরিশোধ</th>
+        <th>ইউটিলিটি</th>
+        <th>বকেয়া</th>
+        <th></th>
+      </tr></thead>
+      <tbody>
+        ${twb.length === 0
+          ? `<tr><td colspan="9"><div class="empty">কোনো ভাড়াটিয়া নেই।</div></td></tr>`
+          : twb.map(t => `<tr>
+            <td>
+              <div class="td-primary">${t.name}</div>
+              <div class="td-secondary">${t.unit}${t.phone?` • ${t.phone}`:''}</div>
+            </td>
+            <td style="color:var(--text2)">৳${fmt(t.rent)}</td>
+            <td style="color:var(--text3);white-space:nowrap">${fmtDate(t.moveInDate)}</td>
+            <td><span class="badge badge-purple">${t.months}</span></td>
+            <td style="color:var(--text2)">৳${fmt(t.expected)}</td>
+            <td style="color:var(--green)">৳${fmt(t.paid)}</td>
+            <td style="color:var(--amber)">৳${fmt(t.utils)}</td>
+            <td>${t.due > 0
+              ? `<span class="badge badge-red">৳${fmt(t.due)}</span>`
+              : t.due < 0
+              ? `<span class="badge badge-blue">৳${fmt(Math.abs(t.due))}</span>`
+              : `<span class="badge badge-green">✓</span>`}</td>
+            <td>
+              <button class="btn btn-danger btn-sm btn-icon" onclick="promptDelete('${t.id}','${esc(t.name)}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </td>
+          </tr>`).join('')
+        }
+      </tbody>
+      ${twb.length > 0 ? `<tfoot><tr>
+        <td colspan="4" style="color:var(--text3)">সর্বমোট (${twb.length} জন ভাড়াটিয়া)</td>
+        <td style="color:var(--text2)">৳${fmt(twb.reduce((s,t)=>s+t.expected,0))}</td>
+        <td style="color:var(--green)">৳${fmt(twb.reduce((s,t)=>s+t.paid,0))}</td>
+        <td style="color:var(--amber)">৳${fmt(twb.reduce((s,t)=>s+t.utils,0))}</td>
+        <td>${(()=>{const d=twb.reduce((s,t)=>s+t.due,0);return d>0?`<span class="badge badge-red">৳${fmt(d)}</span>`:d<0?`<span class="badge badge-blue">৳${fmt(Math.abs(d))}</span>`:`<span class="badge badge-green">✓</span>`;})()}</td>
+        <td></td>
+      </tr></tfoot>` : ''}
+    </table>
+    </div>
+  </div>`;
+}
+
+function payments() {
+  const sorted = [...DB.payments].sort((a,b) => new Date(b.date+' '+b.createdAt) - new Date(a.date+' '+a.createdAt));
+  const total  = DB.payments.reduce((s,p) => s + p.amount, 0);
+  const byTenant = {};
+  DB.payments.forEach(p => { byTenant[p.tenantId] = (byTenant[p.tenantId]||0) + p.amount; });
+
+  return `
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        সকল পেমেন্ট রেকর্ড
+      </div>
+      <span class="badge badge-green">মোট: ৳${fmt(total)}</span>
+    </div>
+    <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>তারিখ</th>
+        <th>ভাড়াটিয়া / ইউনিট</th>
+        <th>পদ্ধতি</th>
+        <th>নোট</th>
+        <th style="text-align:right">পরিশোধিত পরিমাণ</th>
+      </tr></thead>
+      <tbody>
+        ${sorted.length === 0
+          ? `<tr><td colspan="5"><div class="empty"><div class="empty-icon">💳</div><div class="empty-title">কোনো পেমেন্ট নেই</div><div class="empty-sub">উপরে "পেমেন্ট" বাটনে ক্লিক করুন।</div></div></td></tr>`
+          : sorted.map(p => {
+              const t = DB.tenants.find(x => x.id === p.tenantId);
+              return `<tr>
+                <td style="color:var(--text2);white-space:nowrap">${fmtDate(p.date)}</td>
+                <td>
+                  <div class="td-primary">${t?.name||'অজ্ঞাত'}</div>
+                  <div class="td-secondary">${t?.unit||''}</div>
+                </td>
+                <td>${p.method ? `<span class="badge badge-blue">${p.method}</span>` : '<span style="color:var(--text3)">—</span>'}</td>
+                <td style="color:var(--text3)">${p.note||'—'}</td>
+                <td style="text-align:right"><span class="badge badge-green">+৳${fmt(p.amount)}</span></td>
+              </tr>`;
+            }).join('')
+        }
+      </tbody>
+    </table>
+    </div>
+  </div>`;
+}
+
+function utilities() {
+  const sorted = [...DB.utilities].sort((a,b) => new Date(b.date+b.createdAt) - new Date(a.date+a.createdAt));
+  const total  = DB.utilities.reduce((s,u) => s + u.amount, 0);
+  const byType = {};
+  UTIL_TYPES.forEach(t => { byType[t.label] = DB.utilities.filter(u => u.description === t.label).reduce((s,u) => s + u.amount, 0); });
+
+  return `
+  <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+    ${UTIL_TYPES.filter(t => byType[t.label] > 0).map(t => `
+      <div class="stat-card sc-amber" style="padding:16px">
+        <div class="stat-card-bar"></div>
+        <div class="stat-label">${t.icon} ${t.label}</div>
+        <div class="stat-value" style="font-size:22px;color:var(--amber)">৳${fmt(byType[t.label])}</div>
+      </div>
+    `).join('')}
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        সকল ইউটিলিটি বিল
+      </div>
+      <span class="badge badge-amber">মোট: ৳${fmt(total)}</span>
+    </div>
+    <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>তারিখ</th>
+        <th>ভাড়াটিয়া</th>
+        <th>বিবরণ</th>
+        <th style="text-align:right">পরিমাণ</th>
+      </tr></thead>
+      <tbody>
+        ${sorted.length === 0
+          ? `<tr><td colspan="4"><div class="empty"><div class="empty-icon">⚡</div><div class="empty-title">কোনো ইউটিলিটি বিল নেই</div><div class="empty-sub">উপরে "ইউটিলিটি" বাটনে ক্লিক করুন।</div></div></td></tr>`
+          : sorted.map(u => {
+              const t = DB.tenants.find(x => x.id === u.tenantId);
+              const info = UTIL_TYPES.find(x => x.label === u.description);
+              return `<tr>
+                <td style="color:var(--text2);white-space:nowrap">${fmtDate(u.date)}</td>
+                <td>
+                  <div class="td-primary">${t?.name||'অজ্ঞাত'}</div>
+                  <div class="td-secondary">${t?.unit||''}</div>
+                </td>
+                <td><span class="badge badge-amber">${info?.icon||''} ${u.description}</span></td>
+                <td style="text-align:right;font-weight:700;color:var(--amber)">৳${fmt(u.amount)}</td>
+              </tr>`;
+            }).join('')
+        }
+      </tbody>
+    </table>
+    </div>
+  </div>`;
+}
+
+function report() {
+  const { twb, monthly, dues, collected, utilTotal } = globalStats();
+  const totalExpected = twb.reduce((s,t) => s + t.expected, 0);
+  const collectionRate = totalExpected > 0 ? Math.round((collected / totalExpected) * 100) : 0;
+  const now = new Date();
+  const monthNames = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+
+  // Monthly collection chart data (last 6 months)
+  const months6 = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const amt = DB.payments
+      .filter(p => p.date.startsWith(key))
+      .reduce((s,p) => s + p.amount, 0);
+    months6.push({ label: monthNames[d.getMonth()].slice(0,3), amount: amt });
+  }
+  const maxBar = Math.max(...months6.map(m => m.amount), 1);
+
+  return `
+  <div style="margin-bottom:24px">
+    <div style="font-size:13px;color:var(--text3)">রিপোর্ট তৈরির তারিখ: ${now.toLocaleDateString('bn-BD',{year:'numeric',month:'long',day:'numeric'})}</div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card sc-purple">
+      <div class="stat-card-bar"></div>
+      <div class="stat-label">মোট প্রত্যাশিত (সব সময়)</div>
+      <div class="stat-value">৳${fmt(totalExpected)}</div>
+    </div>
+    <div class="stat-card sc-green">
+      <div class="stat-card-bar"></div>
+      <div class="stat-label">মোট আদায়</div>
+      <div class="stat-value" style="color:var(--green)">৳${fmt(collected)}</div>
+    </div>
+    <div class="stat-card sc-red">
+      <div class="stat-card-bar"></div>
+      <div class="stat-label">সংগ্রহ হার</div>
+      <div class="stat-value" style="color:${collectionRate>=80?'var(--green)':collectionRate>=50?'var(--amber)':'var(--red)'}">${collectionRate}%</div>
+      <div class="stat-sub">প্রত্যাশিত বনাম আদায়</div>
+    </div>
+  </div>
+
+  <!-- Bar Chart -->
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-header">
+      <div class="card-title">📊 মাসিক পেমেন্ট সংগ্রহ (সর্বশেষ ৬ মাস)</div>
+    </div>
+    <div style="padding:20px 24px 8px">
+      <div style="display:flex;align-items:flex-end;gap:12px;height:140px;padding:0 8px">
+        ${months6.map(m => {
+          const h = Math.round((m.amount / maxBar) * 120);
+          return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="font-size:11px;font-weight:700;color:${m.amount>0?'var(--accent)':'var(--text3)'}">
+              ${m.amount > 0 ? '৳'+fmtShort(m.amount) : ''}
+            </div>
+            <div style="flex:1;display:flex;align-items:flex-end;width:100%">
+              <div style="width:100%;height:${h}px;min-height:${m.amount>0?4:2}px;background:${m.amount>0?'linear-gradient(180deg,var(--accent),rgba(124,111,247,0.3))':'var(--border2)'};border-radius:5px 5px 0 0;transition:height 0.5s ease;"></div>
+            </div>
+            <div style="font-size:11px;color:var(--text3);white-space:nowrap">${m.label}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>
+
+  <!-- Per-tenant breakdown -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">👥 ভাড়াটিয়া ভিত্তিক বিশ্লেষণ</div>
+    </div>
+    ${twb.length === 0
+      ? `<div class="empty"><div class="empty-icon">📊</div><div class="empty-sub">কোনো ভাড়াটিয়া নেই।</div></div>`
+      : `<div class="table-wrap"><table>
+          <thead><tr>
+            <th>নাম / ইউনিট</th>
+            <th>মোট প্রত্যাশিত</th>
+            <th>মোট পরিশোধ</th>
+            <th>ইউটিলিটি</th>
+            <th>নেট বকেয়া</th>
+            <th>সংগ্রহ হার</th>
+          </tr></thead>
+          <tbody>
+            ${twb.map(t => {
+              const rate = t.expected > 0 ? Math.round((t.paid / (t.expected + t.utils)) * 100) : 100;
+              return `<tr>
+                <td>
+                  <div class="td-primary">${t.name}</div>
+                  <div class="td-secondary">${t.unit}</div>
+                </td>
+                <td style="color:var(--text2)">৳${fmt(t.expected)}</td>
+                <td style="color:var(--green)">৳${fmt(t.paid)}</td>
+                <td style="color:var(--amber)">৳${fmt(t.utils)}</td>
+                <td>${t.due > 0
+                  ? `<span class="badge badge-red">৳${fmt(t.due)}</span>`
+                  : t.due < 0
+                  ? `<span class="badge badge-blue">৳${fmt(Math.abs(t.due))} অতিরিক্ত</span>`
+                  : `<span class="badge badge-green">✓</span>`}</td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div style="font-size:12px;font-weight:700;color:${rate>=80?'var(--green)':rate>=50?'var(--amber)':'var(--red)'}">${Math.min(rate,100)}%</div>
+                    <div class="progress-bar" style="flex:1;max-width:80px">
+                      <div class="progress-fill" style="width:${Math.min(rate,100)}%;background:${rate>=80?'var(--green)':rate>=50?'var(--amber)':'var(--red)'}"></div>
+                    </div>
+                  </div>
+                </td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table></div>`
+    }
+  </div>`;
+}
+
+// ===================== MODAL HELPERS =====================
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function overlayClose(e, id) { if (e.target.id === id) closeModal(id); }
+
+// ===================== TENANT MODAL =====================
+function openTenantModal() {
+  ['f-name','f-unit','f-phone','f-note'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('f-rent').value = '';
+  document.getElementById('f-prev').value = '0';
+  document.getElementById('f-moveIn').value = today();
+  openModal('modal-tenant');
+  setTimeout(() => document.getElementById('f-name').focus(), 100);
+}
+
+function saveTenant() {
+  const name   = val('f-name');
+  const unit   = val('f-unit');
+  const rent   = parseFloat(val('f-rent'));
+  const moveIn = val('f-moveIn');
+  if (!name || !unit || !rent || !moveIn) return toast('সকল প্রয়োজনীয় তথ্য পূরণ করুন।','error');
+
+  DB.tenants.push({
+    id:              uid(),
+    name, unit,
+    rent:            rent,
+    moveInDate:      moveIn,
+    previousBalance: parseFloat(val('f-prev')) || 0,
+    phone:           val('f-phone'),
+    noteText:        val('f-note'),
+    createdAt:       new Date().toISOString()
+  });
+  saveDB(); closeModal('modal-tenant'); refreshAll();
+  toast(`${name} সফলভাবে যোগ করা হয়েছে ✓`, 'success');
+}
+
+// ===================== PAYMENT MODAL =====================
+function openPaymentModal(preselect) {
+  const sel = document.getElementById('p-tenant');
+  sel.innerHTML = '<option value="">-- একজন নির্বাচন করুন --</option>' +
+    DB.tenants.map(t => {
+      const c = calcTenant(t);
+      return `<option value="${t.id}" ${preselect===t.id?'selected':''}>${t.name} (${t.unit})${c.due>0?' — ৳'+fmt(c.due)+' বকেয়া':''}`;
+    }).join('');
+  ['p-amount','p-note'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('p-method').value = '';
+  document.getElementById('p-date').value = today();
+  openModal('modal-payment');
+}
+
+function quickPayment(tenantId) { openPaymentModal(tenantId); }
+
+function savePayment() {
+  const tid    = val('p-tenant');
+  const amount = parseFloat(val('p-amount'));
+  const date   = val('p-date');
+  if (!tid || !amount || !date) return toast('সকল প্রয়োজনীয় তথ্য পূরণ করুন।','error');
+
+  DB.payments.push({
+    id: uid(), tenantId: tid, amount, date,
+    method:    val('p-method'),
+    note:      val('p-note'),
+    createdAt: new Date().toISOString()
+  });
+  const t = DB.tenants.find(x => x.id === tid);
+  saveDB(); closeModal('modal-payment'); refreshAll();
+  toast(`পেমেন্ট রেকর্ড হয়েছে${t?' — '+t.name:''} ✓`, 'success');
+}
+
+// ===================== UTILITY MODAL =====================
+function buildUtilityList() {
+  document.getElementById('util-list').innerHTML = UTIL_TYPES.map((type, i) => `
+    <div class="util-item" id="ui-${i}" onclick="toggleUtil(${i})">
+      <input type="checkbox" id="uc-${i}" onclick="event.stopPropagation();toggleUtil(${i})">
+      <label for="uc-${i}">${type.icon} ${type.label}</label>
+      <input type="number" id="ua-${i}" class="utility-amount" placeholder="৳"
+             min="0" step="0.01" style="display:none"
+             onclick="event.stopPropagation()" onchange="">
+    </div>
+  `).join('');
+}
+
+function toggleUtil(i) {
+  const cb = document.getElementById('uc-'+i);
+  const inp = document.getElementById('ua-'+i);
+  const item = document.getElementById('ui-'+i);
+  cb.checked = !cb.checked;
+  inp.style.display = cb.checked ? 'block' : 'none';
+  item.classList.toggle('on', cb.checked);
+  if (cb.checked) setTimeout(() => inp.focus(), 50);
+}
+
+function openUtilityModal(preselect) {
+  const sel = document.getElementById('u-tenant');
+  sel.innerHTML = '<option value="">-- একজন নির্বাচন করুন --</option>' +
+    DB.tenants.map(t => `<option value="${t.id}" ${preselect===t.id?'selected':''}>${t.name} (${t.unit})</option>`).join('');
+  document.getElementById('u-date').value = today();
+  buildUtilityList();
+  openModal('modal-utility');
+}
+
+function quickUtility(tenantId) { openUtilityModal(tenantId); }
+
+function saveUtility() {
+  const tid  = val('u-tenant');
+  const date = val('u-date');
+  if (!tid || !date) return toast('ভাড়াটিয়া এবং তারিখ নির্বাচন করুন।','error');
+
+  let added = 0;
+  UTIL_TYPES.forEach((type, i) => {
+    const checked = document.getElementById('uc-'+i)?.checked;
+    const amount  = parseFloat(document.getElementById('ua-'+i)?.value || 0);
+    if (checked && amount > 0) {
+      DB.utilities.push({ id:uid(), tenantId:tid, description:type.label, amount, date, createdAt:new Date().toISOString() });
+      added++;
+    }
+  });
+
+  if (!added) return toast('কমপক্ষে একটি ইউটিলিটি টিক করে পরিমাণ দিন।','error');
+  saveDB(); closeModal('modal-utility'); refreshAll();
+  toast(`${added}টি ইউটিলিটি বিল যোগ হয়েছে ✓`, 'success');
+}
+
+// ===================== DELETE =====================
+function promptDelete(id, name) {
+  pendingDeleteId = id;
+  document.getElementById('del-msg').innerHTML =
+    `আপনি কি নিশ্চিত যে <strong>${name}</strong> কে মুছে ফেলতে চান?<br><br>
+     সমস্ত পেমেন্ট রেকর্ড এবং ইউটিলিটি বিল স্থায়ীভাবে মুছে যাবে।`;
+  openModal('modal-delete');
+}
+
+function confirmDelete() {
+  if (!pendingDeleteId) return;
+  const name = DB.tenants.find(t => t.id === pendingDeleteId)?.name || '';
+  DB.tenants   = DB.tenants  .filter(t => t.id        !== pendingDeleteId);
+  DB.payments  = DB.payments .filter(p => p.tenantId  !== pendingDeleteId);
+  DB.utilities = DB.utilities.filter(u => u.tenantId  !== pendingDeleteId);
+  pendingDeleteId = null;
+  saveDB(); closeModal('modal-delete'); refreshAll();
+  toast(`${name} মুছে ফেলা হয়েছে।`, 'info');
+}
+
+// ===================== TOAST =====================
+function toast(msg, type='success') {
+  const icons = { success:'✓', error:'⚠', info:'ℹ' };
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${icons[type]||'•'}</span><span>${msg}</span>`;
+  document.getElementById('toast-root').appendChild(el);
+  setTimeout(() => { el.style.opacity='0'; el.style.transform='translateX(24px)'; el.style.transition='all 0.3s'; setTimeout(()=>el.remove(),300); }, 3200);
+}
+
+// ===================== UTILS =====================
+function val(id) { return (document.getElementById(id)?.value || '').trim(); }
+function uid()   { return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function today() { return new Date().toISOString().split('T')[0]; }
+function esc(s)  { return s.replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+
+function fmt(n) {
+  if (!n && n !== 0) return '০';
+  return Math.round(n).toLocaleString('en-IN').replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+}
+
+function fmtShort(n) {
+  if (n >= 100000) return (n/100000).toFixed(1) + 'L';
+  if (n >= 1000)   return (n/1000).toFixed(0) + 'K';
+  return fmt(n);
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  try {
+    return new Date(d + 'T00:00:00').toLocaleDateString('bn-BD', { year:'numeric', month:'short', day:'numeric' });
+  } catch(e) { return d; }
+}
+
+// ===================== KEYBOARD =====================
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open'));
+  if ((e.ctrlKey || e.metaKey) && e.key === 'n') { e.preventDefault(); openTenantModal(); }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'p') { e.preventDefault(); openPaymentModal(); }
+});
+
+// ===================== INIT =====================
+document.getElementById('f-moveIn').value = today();
+loadDB();
+</script>
+</body>
+</html>
